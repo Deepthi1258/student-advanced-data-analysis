@@ -1,0 +1,59 @@
+import pandas as pd
+
+# Load data
+df = pd.read_csv("students.csv")
+
+print("Original Data:\n", df)
+
+# Fill missing values (important before converting type)
+df["Marks"] = df["Marks"].fillna(df["Marks"].mean())
+df["Age"] = df["Age"].fillna(df["Age"].mean())
+
+print("\nAfter Filling Missing Values:\n", df)
+
+# 1. Check duplicates
+print("\nDuplicates:\n", df.duplicated())
+print("Number of duplicates:", df.duplicated().sum())
+
+# 2. Remove duplicates
+df = df.drop_duplicates()
+print("\nAfter Removing Duplicates:\n", df)
+
+# 3. Rename column
+df.rename(columns={"Marks": "Score"}, inplace=True)
+print("\nAfter Renaming Column:\n", df)
+
+# 4. Change data type
+df["Score"] = df["Score"].astype(int)
+print("\nAfter Changing Data Type:\n", df.dtypes)
+
+# 5. Create Performance column
+def performance(m):
+    if m >= 85:
+        return "Excellent"
+    elif m >= 70:
+        return "Good"
+    else:
+        return "Needs Improvement"
+
+df["Performance"] = df["Score"].apply(performance)
+print("\nWith Performance Column:\n", df)
+
+# 🔥 ADVANCED ANALYSIS
+
+# 1. Top 3 students
+print("\nTop 3 Students:\n", df.sort_values(by="Score", ascending=False).head(3))
+
+# 2. Bottom 3 students
+print("\nBottom 3 Students:\n", df.sort_values(by="Score").head(3))
+
+# 3. Students above average
+avg = df["Score"].mean()
+print("\nAverage Score:", avg)
+print("\nStudents Above Average:\n", df[df["Score"] > avg])
+
+# 4. Count by performance
+print("\nPerformance Count:\n", df["Performance"].value_counts())
+
+# 5. Group analysis
+print("\nAverage Score by Performance:\n", df.groupby("Performance")["Score"].mean())
